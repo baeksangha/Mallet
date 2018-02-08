@@ -382,7 +382,7 @@ public class Alphabet implements Serializable
 	public Object readResolve() throws ObjectStreamException {
 		Object previous = deserializedEntries.get(instanceId);
 		if (previous != null){
-			//System.out.println(" ***Alphabet ReadResolve:Resolving to previous instance. instance id= " + instanceId);
+			System.out.println(" ***Alphabet ReadResolve:Resolving to previous instance. instance id= " + instanceId);
 			return previous;
 		}
 		if (instanceId != null){
@@ -391,7 +391,7 @@ public class Alphabet implements Serializable
                 return prev;
             }
         }
-		//System.out.println(" *** Alphabet ReadResolve: new instance. instance id= " + instanceId);
+		System.out.println(" *** Alphabet ReadResolve: new instance. instance id= " + instanceId);
 		return this;
 	}
 }

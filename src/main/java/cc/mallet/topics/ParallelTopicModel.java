@@ -717,28 +717,23 @@ public class ParallelTopicModel implements Serializable {
 		int offset = 0;
 
 		if (numThreads > 1) {
-		
 			for (int thread = 0; thread < numThreads; thread++) {
 				int[] runnableTotals = new int[numTopics];
 				System.arraycopy(tokensPerTopic, 0, runnableTotals, 0, numTopics);
-				
 				int[][] runnableCounts = new int[numTypes][];
 				for (int type = 0; type < numTypes; type++) {
 					int[] counts = new int[typeTopicCounts[type].length];
 					System.arraycopy(typeTopicCounts[type], 0, counts, 0, counts.length);
 					runnableCounts[type] = counts;
 				}
-				
 				// some docs may be missing at the end due to integer division
 				if (thread == numThreads - 1) {
 					docsPerThread = data.size() - offset;
 				}
-				
 				Randoms random = null;
 				if (randomSeed == -1) {
 					random = new Randoms();
-				}
-				else {
+				} else {
 					random = new Randoms(randomSeed);
 				}
 
@@ -747,23 +742,17 @@ public class ParallelTopicModel implements Serializable {
 													   random, data,
 													   runnableCounts, runnableTotals,
 													   offset, docsPerThread);
-				
 				runnables[thread].initializeAlphaStatistics(docLengthCounts.length);
-				
 				offset += docsPerThread;
-			
 			}
-		}
-		else {
-			
+		} else {
 			// If there is only one thread, copy the typeTopicCounts
 			//  arrays directly, rather than allocating new memory.
 
 			Randoms random = null;
 			if (randomSeed == -1) {
 				random = new Randoms();
-			}
-			else {
+			} else {
 				random = new Randoms(randomSeed);
 			}
 
@@ -772,7 +761,6 @@ public class ParallelTopicModel implements Serializable {
 											  random, data,
 											  typeTopicCounts, tokensPerTopic,
 											  offset, docsPerThread);
-
 			runnables[0].initializeAlphaStatistics(docLengthCounts.length);
 
 			// If there is only one thread, we 
@@ -785,36 +773,28 @@ public class ParallelTopicModel implements Serializable {
 		ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 	
 		for (int iteration = 1; iteration <= numIterations; iteration++) {
-
 			long iterationStart = System.currentTimeMillis();
 
 			if (showTopicsInterval != 0 && iteration != 0 && iteration % showTopicsInterval == 0) {
 				logger.info("\n" + displayTopWords (wordsPerTopic, false));
 			}
-
 			if (saveStateInterval != 0 && iteration % saveStateInterval == 0) {
 				this.printState(new File(stateFilename + '.' + iteration));
 			}
-
 			if (saveModelInterval != 0 && iteration % saveModelInterval == 0) {
 				this.write(new File(modelFilename + '.' + iteration));
 			}
-
 			if (numThreads > 1) {
-			
 				// Submit runnables to thread pool
-				
 				for (int thread = 0; thread < numThreads; thread++) {
 					if (iteration > burninPeriod && optimizeInterval != 0 &&
 						iteration % saveSampleInterval == 0) {
 						runnables[thread].collectAlphaStatistics();
 					}
-					
 					logger.fine("submitting thread " + thread);
 					executor.submit(runnables[thread]);
 					//runnables[thread].run();
 				}
-				
 				// I'm getting some problems that look like 
 				//  a thread hasn't started yet when it is first
 				//  polled, so it appears to be finished. 
@@ -827,7 +807,6 @@ public class ParallelTopicModel implements Serializable {
 				
 				boolean finished = false;
 				while (! finished) {
-					
 					try {
 						Thread.sleep(10);
 					} catch (InterruptedException e) {
@@ -835,21 +814,15 @@ public class ParallelTopicModel implements Serializable {
 					}
 					
 					finished = true;
-					
 					// Are all the threads done?
 					for (int thread = 0; thread < numThreads; thread++) {
 						//logger.info("thread " + thread + " done? " + runnables[thread].isFinished);
 						finished = finished && runnables[thread].isFinished;
 					}
-					
 				}
-				
 				//System.out.print("[" + (System.currentTimeMillis() - iterationStart) + "] ");
-				
 				sumTypeTopicCounts(runnables);
-				
 				//System.out.print("[" + (System.currentTimeMillis() - iterationStart) + "] ");
-				
 				for (int thread = 0; thread < numThreads; thread++) {
 					int[] runnableTotals = runnables[thread].getTokensPerTopic();
 					System.arraycopy(tokensPerTopic, 0, runnableTotals, 0, numTopics);
@@ -858,27 +831,21 @@ public class ParallelTopicModel implements Serializable {
 					for (int type = 0; type < numTypes; type++) {
 						int[] targetCounts = runnableCounts[type];
 						int[] sourceCounts = typeTopicCounts[type];
-						
 						int index = 0;
 						while (index < sourceCounts.length) {
-							
 							if (sourceCounts[index] != 0) {
 								targetCounts[index] = sourceCounts[index];
-							}
-							else if (targetCounts[index] != 0) {
+							} else if (targetCounts[index] != 0) {
 								targetCounts[index] = 0;
-							}
-							else {
+							} else {
 								break;
 							}
-							
 							index++;
 						}
 						//System.arraycopy(typeTopicCounts[type], 0, counts, 0, counts.length);
 					}
 				}
-			}
-			else {
+			} else {
 				if (iteration > burninPeriod && optimizeInterval != 0 &&
 					iteration % saveSampleInterval == 0) {
 					runnables[0].collectAlphaStatistics();
@@ -889,8 +856,7 @@ public class ParallelTopicModel implements Serializable {
 			long elapsedMillis = System.currentTimeMillis() - iterationStart;
 			if (elapsedMillis < 1000) {
 				logger.fine(elapsedMillis + "ms ");
-			}
-			else {
+			} else {
 				logger.fine((elapsedMillis/1000) + "s ");
 			}   
 
@@ -905,9 +871,9 @@ public class ParallelTopicModel implements Serializable {
 			
 			if (iteration % 10 == 0) {
 				if (printLogLikelihood) {
+					//System.out.println(modelLogLikelihood() / totalTokens);
 					logger.info ("<" + iteration + "> LL/token: " + formatter.format(modelLogLikelihood() / totalTokens));
-				}
-				else {
+				} else {
 					logger.info ("<" + iteration + ">");
 				}
 			}
@@ -1847,7 +1813,7 @@ public class ParallelTopicModel implements Serializable {
 		//	 sum_i [ logGamma( alpha_i + N_i) - logGamma( alpha_i ) ]
 
 		// Do the documents first
-
+		//System.out.println("init : "+logLikelihood);
 		int[] topicCounts = new int[numTopics];
 		double[] topicLogGammas = new double[numTopics];
 		int[] docTopics;
@@ -1871,16 +1837,13 @@ public class ParallelTopicModel implements Serializable {
 									  topicLogGammas[ topic ]);
 				}
 			}
-
 			// subtract the (count + parameter) sum term
 			logLikelihood -= Dirichlet.logGammaStirling(alphaSum + docTopics.length);
 
 			Arrays.fill(topicCounts, 0);
 		}
-
 		// add the parameter sum term
 		logLikelihood += data.size() * Dirichlet.logGammaStirling(alphaSum);
-
 		// And the topics
 
 		// Count the number of type-topic pairs that are not just (logGamma(beta) - logGamma(beta))
@@ -1912,12 +1875,10 @@ public class ParallelTopicModel implements Serializable {
 				index++;
 			}
 		}
-	
 		for (int topic=0; topic < numTopics; topic++) {
 			logLikelihood -= 
 				Dirichlet.logGammaStirling( (beta * numTypes) +
 											tokensPerTopic[ topic ] );
-
 			if (Double.isNaN(logLikelihood)) {
 				logger.info("NaN after topic " + topic + " " + tokensPerTopic[ topic ]);
 				return 0;
@@ -1928,15 +1889,12 @@ public class ParallelTopicModel implements Serializable {
 			}
 
 		}
-	
 		// logGamma(|V|*beta) for every topic
 		logLikelihood += 
 			Dirichlet.logGammaStirling(beta * numTypes) * numTopics;
-
 		// logGamma(beta) for all type/topic pairs with non-zero count
 		logLikelihood -=
 			Dirichlet.logGammaStirling(beta) * nonZeroTypeTopics;
-
 		if (Double.isNaN(logLikelihood)) {
 			logger.info("at the end");
 		}
