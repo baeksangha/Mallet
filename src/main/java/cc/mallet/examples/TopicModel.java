@@ -25,8 +25,8 @@ public class TopicModel {
         pipeList.add( new TokenSequence2FeatureSequence() );
 
         //InstanceList instances = new InstanceList (new SerialPipes(pipeList));
-        InstanceList instances = ImportExample.extractInstanceList(new String[]{"C:\\Users\\USER\\Desktop\\mallet\\병아리"});
-        System.out.println(instances.get(0).getData());
+        InstanceList instances = ImportExample.extractInstanceList(new String[]{"C:\\Users\\USER\\Desktop\\mallet\\samples"});
+        //System.out.println(instances.get(0).getData());
         //Reader fileReader = new InputStreamReader(new FileInputStream(new File(args[0])), "UTF-8");
 
         //instances.addThruPipe(new CsvIterator (fileReader, Pattern.compile("^(\\S*)[\\s,]*(\\S*)[\\s,]*(.*)$"),
@@ -61,10 +61,10 @@ public class TopicModel {
 
             Formatter out = new Formatter(new StringBuilder(), Locale.US);
             System.out.println("output");
-            for (int position = 0; position < tokens.getLength(); position++) {
-                out.format("%s-%d ", dataAlphabet.lookupObject(tokens.getIndexAtPosition(position)), topics.getIndexAtPosition(position));
-            }
-            System.out.println(out);
+//            for (int position = 0; position < tokens.getLength(); position++) {
+//                out.format("%s-%d ", dataAlphabet.lookupObject(tokens.getIndexAtPosition(position)), topics.getIndexAtPosition(position));
+//            }
+//            System.out.println(out);
 
             // Estimate the topic distribution of the first instance,
             //  given the current Gibbs state.
