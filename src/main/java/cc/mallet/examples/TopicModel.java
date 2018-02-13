@@ -1,6 +1,8 @@
 package cc.mallet.examples;
 
 import cc.mallet.ImportExample;
+import cc.mallet.classify.ClassifierTrainer;
+import cc.mallet.classify.MaxEntTrainer;
 import cc.mallet.util.*;
 import cc.mallet.types.*;
 import cc.mallet.pipe.*;
@@ -26,6 +28,9 @@ public class TopicModel {
 
         //InstanceList instances = new InstanceList (new SerialPipes(pipeList));
         InstanceList instances = ImportExample.extractInstanceList(new String[]{"C:\\Users\\USER\\Desktop\\mallet\\samples"});
+
+
+
         //System.out.println(instances.get(0).getData());
         //Reader fileReader = new InputStreamReader(new FileInputStream(new File(args[0])), "UTF-8");
 
@@ -46,8 +51,12 @@ public class TopicModel {
         // Run the model for 50 iterations and stop (this is for testing only,
         //  for real applications, use 1000 to 2000 iterations)//////////////////////////////////////////////////
         model.setNumIterations(50);
+        LabelAlphabet test2 = model.topicAlphabet;
         model.estimate();
 
+        ClassifierTrainer trainer = new MaxEntTrainer();
+
+        trainer.train(instances);
         // Show the words and topics in the first instance
 
         // The data alphabet maps word IDs to strings

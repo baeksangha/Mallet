@@ -106,6 +106,8 @@ public class Text2Vectors {
 		 "   to standard output. This option is intended for debugging.", null);
 	
 	public static void main (String[] args) throws FileNotFoundException, IOException 	{
+
+		double start = System.currentTimeMillis();
 		// Process the command-line options
 		CommandOption.setSummary (Text2Vectors.class,
 								  "A tool for creating instance lists of FeatureVectors or FeatureSequences from text documents.\n");
@@ -339,6 +341,8 @@ public class Text2Vectors {
 			oos.writeObject(previousInstanceList);
 			oos.close();
 		}
+
+		System.out.println("elapsed time : " + String.valueOf((System.currentTimeMillis()-start)/1000));
 	
 	}
 

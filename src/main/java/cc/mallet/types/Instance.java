@@ -78,6 +78,7 @@ public class Instance implements Serializable, AlphabetCarrying, Cloneable
 	PropertyList properties = null;
 	boolean locked = false;
 
+	// alpha, beta
 
 	/** In certain unusual circumstances, you might want to create an Instance 
 	 * without sending it through a pipe.

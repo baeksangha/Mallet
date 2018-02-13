@@ -159,6 +159,8 @@ public class TopicTrainer {
 
 	public static void main (String[] args) throws java.io.IOException {
 
+		double start = System.currentTimeMillis();
+
 		// Process the command-line options
 		CommandOption.setSummary (TopicTrainer.class,
 								  "A tool for estimating, saving and printing diagnostics for topic models, such as LDA.");
@@ -342,5 +344,9 @@ public class TopicTrainer {
 			}
 					
 		}
+
+		System.out.println("elapsed time : " + String.valueOf(System.currentTimeMillis()-start));
 	}
+
+
 }

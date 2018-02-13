@@ -61,7 +61,12 @@ public class MaxEntOptimizableByLabelLikelihood implements Optimizable.ByGradien
 	{
 		this.trainingList = trainingSet;
 		Alphabet fd = trainingSet.getDataAlphabet();
-		LabelAlphabet ld = (LabelAlphabet) trainingSet.getTargetAlphabet();
+		Alphabet test = trainingSet.getAlphabet();
+		Object test2 = trainingSet.get(0).getTarget();
+		LabelAlphabet ld = new LabelAlphabet();
+		for(int i=0; i<trainingSet.size(); i++)
+			ld.lookupLabel(trainingSet.get(i).getTarget(), true);
+		//LabelAlphabet ld = (LabelAlphabet) trainingSet.getTargetAlphabet();
 		// Don't fd.stopGrowth, because someone might want to do feature induction
 		ld.stopGrowth();
 		// Add one feature for the "default feature".

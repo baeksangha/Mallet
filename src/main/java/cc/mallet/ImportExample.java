@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
+import cc.mallet.classify.Classifier;
 import cc.mallet.pipe.*;
 import cc.mallet.pipe.iterator.*;
 import cc.mallet.types.*;
@@ -48,6 +49,8 @@ public class ImportExample {
         // Rather than storing tokens as strings, convert
         //  them to integers by looking them up in an alphabet.
         pipeList.add(new TokenSequence2FeatureSequence());
+
+
 
         // Do the same thing for the "target" field:
         //  convert a class label string to a Label object,
@@ -99,6 +102,42 @@ public class ImportExample {
         //instances.save(new File(args[1]));
         return instances;
     }
+
+    public void printLabelings(Classifier classifier, File file) throws IOException {
+
+        // Create a new iterator that will read raw instance data from
+        //  the lines of a file.
+        // Lines should be formatted as:
+        //
+        //   [name] [label] [data ... ]
+        //
+        //  in this case, "label" is ignored.
+
+        CsvIterator reader =
+                new CsvIterator(new FileReader(file),
+                        "(\\w+)\\s+(\\w+)\\s+(.*)",
+                        3, 2, 1);  // (data, label, name) field indices
+
+        // Create an iterator that will pass each instance through
+        //  the same pipe that was used to create the training data
+        //  for the classifier.
+        Iterator instances =
+                classifier.getInstancePipe().newIteratorFrom(reader);
+
+        // Classifier.classify() returns a Classification object
+        //  that includes the instance, the classifier, and the
+        //  classification results (the labeling). Here we only
+        //  care about the Labeling.
+        while (instances.hasNext()) {
+            Labeling labeling = classifier.classify(instances.next()).getLabeling();
+
+            // print the labels with their weights in descending order (ie best first)
+
+            for (int rank = 0; rank < labeling.numLocations(); rank++){
+                System.out.print(labeling.getLabelAtRank(rank) + ":" +
+                        labeling.getValueAtRank(rank) + " ");}
+            System.out.println();
+        }}
 
     /** This class illustrates how to build a simple file filter */
     class TxtFilter implements FileFilter {
